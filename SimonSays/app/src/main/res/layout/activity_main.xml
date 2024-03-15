@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@android:color/black"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/buttonRed"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Red"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/red"
+        android:onClick="onClickButton"/>
+
+    <Button
+        android:id="@+id/buttonGreen"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_toEndOf="@id/buttonRed"
+        android:text="Green"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/dark_green"
+        android:onClick="onClickButton"/>
+
+    <Button
+        android:id="@+id/buttonBlue"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_below="@id/buttonRed"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Blue"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/blue"
+        android:onClick="onClickButton"/>
+
+    <Button
+        android:id="@+id/buttonYellow"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_below="@+id/buttonGreen"
+        android:layout_alignEnd="@+id/buttonGreen"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="-1dp"
+        android:backgroundTint="@color/dark_yellow"
+        android:onClick="onClickButton"
+        android:text="Yellow"
+        android:textAllCaps="false" />
+
+    <TextView
+        android:id="@+id/textScore"
+        android:layout_width="182dp"
+        android:layout_height="114dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="463dp"
+        android:layout_marginEnd="68dp"
+        android:text="Score: 0"
+        android:textColor="@android:color/white"
+        android:textSize="34sp" />
+
+</RelativeLayout>
