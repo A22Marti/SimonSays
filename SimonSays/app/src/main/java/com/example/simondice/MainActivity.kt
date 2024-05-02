@@ -24,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     private var score = 0
 
     private lateinit var textScore: TextView
+    private lateinit var textHighScore: TextView
+    private lateinit var databaseHandler: DatabaseHandler
 
     private var defeatHandler: Handler? = null
 
@@ -34,6 +36,8 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer = MediaPlayer.create(this, soundResources[0])
 
         textScore = findViewById(R.id.textScore)
+        textHighScore = findViewById(R.id.textHighScore)
+        databaseHandler = DatabaseHandler(this)
 
         val buttons = arrayOf(
             findViewById<Button>(R.id.buttonRed),
@@ -47,6 +51,10 @@ class MainActivity : AppCompatActivity() {
                 onButtonClick(index, button)
             }
         }
+
+        // Mostrar el highscore guardado en la base de datos
+        val highscore = databaseHandler.getHighscore()
+        textHighScore.text = "Highscore: $highscore"
 
         startSimonSays()
     }
@@ -78,6 +86,13 @@ class MainActivity : AppCompatActivity() {
             restartGame()
             score = 0
             textScore.text = "Score: $score" // Reinicia el texto del TextView a cero en caso de derrota
+
+            // Guardar la puntuación en la base de datos si es mayor que el highscore actual
+            val highscore = databaseHandler.getHighscore()
+            if (score > highscore) {
+                databaseHandler.addHighscore(score)
+                textHighScore.text = "Highscore: $score"
+            }
         }, mediaPlayer.duration.toLong() + 1000)
     }
 

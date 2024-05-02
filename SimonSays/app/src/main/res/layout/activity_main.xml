@@ -68,4 +68,20 @@
         android:textColor="@android:color/white"
         android:textSize="34sp" />
 
+    <TextView
+        android:id="@+id/textHighScore"
+        android:layout_width="181dp"
+        android:layout_height="71dp"
+        android:layout_below="@id/textScore"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="123dp"
+        android:layout_marginTop="41dp"
+        android:layout_marginEnd="91dp"
+        android:layout_marginBottom="26dp"
+        android:text="Highscore: 0"
+        android:textColor="@android:color/white"
+        android:textSize="24sp" />
+
 </RelativeLayout>
