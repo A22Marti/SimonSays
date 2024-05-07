@@ -37,17 +37,22 @@ class DatabaseHandler(context: Context) :
 
     fun getHighscore(): Int {
         val db = this.readableDatabase
+        var highscore = 0
         val query = "SELECT * FROM $TABLE_HIGHSCORE ORDER BY $KEY_SCORE DESC LIMIT 1"
         val cursor = db.rawQuery(query, null)
-        var highscore = 0
         if (cursor.moveToFirst()) {
             val scoreIndex = cursor.getColumnIndex(KEY_SCORE)
-            if (scoreIndex >= 0) {
-                highscore = cursor.getInt(scoreIndex)
-            }
+            highscore = cursor.getInt(scoreIndex)
         }
         cursor.close()
         db.close()
         return highscore
+    }
+
+    init {
+        // Agregar un highscore inicial si la tabla está vacía
+        if (getHighscore() == 0) {
+            addHighscore(0)
+        }
     }
 }

@@ -52,8 +52,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Mostrar el highscore guardado en la base de datos
+        databaseHandler.addHighscore(0)
         val highscore = databaseHandler.getHighscore()
+
+        // Actualizar el texto del TextView con el highscore obtenido
         textHighScore.text = "Highscore: $highscore"
 
         startSimonSays()
@@ -71,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                 addRandomButtonToSimonSequence()
                 playSimonSequence()
                 score++
-                textScore.text = "Score: $score" // Actualiza el texto del TextView con la puntuación actual
+                textScore.text = "Score: $score"
             }
         } else {
             handleDefeat()
@@ -80,19 +82,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleDefeat() {
         hideButtons()
+        val highscore = databaseHandler.getHighscore()
+        if (score > highscore) {
+            databaseHandler.addHighscore(score)
+            textHighScore.text = "Highscore: $score"
+        }
         defeatHandler = Handler()
         defeatHandler?.postDelayed({
             showButtons()
             restartGame()
             score = 0
-            textScore.text = "Score: $score" // Reinicia el texto del TextView a cero en caso de derrota
+            textScore.text = "Score: $score"
 
-            // Guardar la puntuación en la base de datos si es mayor que el highscore actual
-            val highscore = databaseHandler.getHighscore()
-            if (score > highscore) {
-                databaseHandler.addHighscore(score)
-                textHighScore.text = "Highscore: $score"
-            }
+
         }, mediaPlayer.duration.toLong() + 1000)
     }
 
@@ -139,6 +141,7 @@ class MainActivity : AppCompatActivity() {
     private fun restartGame() {
         simonSequence.clear()
         userSequenceIndex = 0
+        textHighScore.text = "Highscore: " + databaseHandler.getHighscore().toString();
         addRandomButtonToSimonSequence()
         playSimonSequence()
     }
