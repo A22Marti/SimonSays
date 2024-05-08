@@ -96,6 +96,11 @@ class MainActivity : AppCompatActivity() {
             val currentHighscore = databaseHandler.getHighscore()
             textHighScore.text = "Highscore: $currentHighscore"
         }
+
+        // Actualizar la mejor puntuación del día
+        val highscoreToday = databaseHandler.getHighscoreOfToday()
+        textHighScoreToday.text = "Best Score Today: $highscoreToday"
+
         defeatHandler = Handler()
         defeatHandler?.postDelayed({
             showButtons()
