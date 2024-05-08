@@ -7,6 +7,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var textScore: TextView
     private lateinit var textHighScore: TextView
+    private lateinit var textHighScoreToday: TextView
     private lateinit var databaseHandler: DatabaseHandler
 
     private var defeatHandler: Handler? = null
@@ -37,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         textScore = findViewById(R.id.textScore)
         textHighScore = findViewById(R.id.textHighScore)
+        textHighScoreToday = findViewById(R.id.textHighScoreToday)
         databaseHandler = DatabaseHandler(this)
 
         val buttons = arrayOf(
@@ -52,11 +56,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        databaseHandler.addHighscore(0)
+        databaseHandler.addHighscore(0, "")
         val highscore = databaseHandler.getHighscore()
-
-        // Actualizar el texto del TextView con el highscore obtenido
         textHighScore.text = "Highscore: $highscore"
+
+        val highscoreToday = databaseHandler.getHighscoreOfToday()
+        textHighScoreToday.text = "Best Score Today: $highscoreToday"
 
         startSimonSays()
     }
@@ -84,8 +89,12 @@ class MainActivity : AppCompatActivity() {
         hideButtons()
         val highscore = databaseHandler.getHighscore()
         if (score > highscore) {
-            databaseHandler.addHighscore(score)
+            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            databaseHandler.addHighscore(score, currentDate)
             textHighScore.text = "Highscore: $score"
+        } else {
+            val currentHighscore = databaseHandler.getHighscore()
+            textHighScore.text = "Highscore: $currentHighscore"
         }
         defeatHandler = Handler()
         defeatHandler?.postDelayed({
@@ -93,8 +102,6 @@ class MainActivity : AppCompatActivity() {
             restartGame()
             score = 0
             textScore.text = "Score: $score"
-
-
         }, mediaPlayer.duration.toLong() + 1000)
     }
 
@@ -141,7 +148,7 @@ class MainActivity : AppCompatActivity() {
     private fun restartGame() {
         simonSequence.clear()
         userSequenceIndex = 0
-        textHighScore.text = "Highscore: " + databaseHandler.getHighscore().toString();
+        textHighScore.text = "Highscore: " + databaseHandler.getHighscore().toString()
         addRandomButtonToSimonSequence()
         playSimonSequence()
     }
