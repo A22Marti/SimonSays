@@ -4,7 +4,10 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var textScore: TextView
     private lateinit var textHighScore: TextView
     private lateinit var textHighScoreToday: TextView
+    private lateinit var crossImage: ImageView
     private lateinit var databaseHandler: DatabaseHandler
 
     private var defeatHandler: Handler? = null
@@ -41,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         textScore = findViewById(R.id.textScore)
         textHighScore = findViewById(R.id.textHighScore)
         textHighScoreToday = findViewById(R.id.textHighScoreToday)
+        crossImage = findViewById(R.id.crossImage) // Inicializar crossImage
         databaseHandler = DatabaseHandler(this)
 
         val buttons = arrayOf(
@@ -87,27 +92,68 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleDefeat() {
         hideButtons()
+        showCrossAnimation()
+
+        // Obtener el mejor puntaje de todos los tiempos
         val highscore = databaseHandler.getHighscore()
+
+        // Actualizar el puntaje del día si es mayor que el anterior
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val highscoreToday = databaseHandler.getHighscoreOfToday()
+        if (score > highscoreToday) {
+            databaseHandler.addHighscore(score, currentDate)
+            textHighScoreToday.text = "Best Score Today: $score"
+        } else {
+            textHighScoreToday.text = "Best Score Today: $highscoreToday"
+        }
+
+        // Actualizar el puntaje de todos los tiempos si es necesario
         if (score > highscore) {
-            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
             databaseHandler.addHighscore(score, currentDate)
             textHighScore.text = "Highscore: $score"
         } else {
-            val currentHighscore = databaseHandler.getHighscore()
-            textHighScore.text = "Highscore: $currentHighscore"
+            textHighScore.text = "Highscore: $highscore"
         }
-
-        // Actualizar la mejor puntuación del día
-        val highscoreToday = databaseHandler.getHighscoreOfToday()
-        textHighScoreToday.text = "Best Score Today: $highscoreToday"
 
         defeatHandler = Handler()
         defeatHandler?.postDelayed({
+            hideCrossAnimation()
             showButtons()
             restartGame()
             score = 0
             textScore.text = "Score: $score"
         }, mediaPlayer.duration.toLong() + 1000)
+    }
+
+    private fun showCrossAnimation() {
+        crossImage.visibility = View.VISIBLE
+        val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+        val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+
+        fadeIn.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation) {}
+            override fun onAnimationEnd(animation: Animation) {
+                crossImage.startAnimation(fadeOut)
+            }
+
+            override fun onAnimationRepeat(animation: Animation) {}
+        })
+
+        fadeOut.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation) {}
+            override fun onAnimationEnd(animation: Animation) {
+                crossImage.visibility = View.GONE
+            }
+
+            override fun onAnimationRepeat(animation: Animation) {}
+        })
+
+        crossImage.startAnimation(fadeIn)
+    }
+
+    private fun hideCrossAnimation() {
+        crossImage.clearAnimation()
+        crossImage.visibility = View.GONE
     }
 
     private fun hideButtons() {
